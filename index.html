@@ -3,442 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل طالب جديد | Student Registration</title>
-    
+    <title>تسجيل طالب جديد | New Registration</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --primary-color: #0d6efd;       /* اللون الأزرق الأساسي */
-            --bg-color: #f4f6f9;            /* لون الخلفية */
-            --card-border: #e0e0e0;         /* لون حدود البطاقات */
-            --selected-bg: #e7f1ff;         /* لون خلفية الخيار المحدد */
-        }
+        :root { --primary-color: #0d6efd; --bg-color: #f4f6f9; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg-color); min-height: 100vh; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; box-sizing: border-box; }
+
+        .container { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 450px; text-align: center; margin-top: 50px; transition: 0.3s; }
         
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-color);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        /* --- زر تغيير اللغة --- */
-        .lang-switch {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: white;
-            border: 1px solid #ddd;
-            padding: 8px 16px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: 0.3s;
-            z-index: 100;
-        }
-        .lang-switch:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-        /* تعديل مكان الزر عند التحويل للغة الإنجليزية */
-        html[dir="ltr"] .lang-switch { left: auto; right: 20px; }
-
-        /* --- الحاوية الرئيسية --- */
-        .container {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        .logo-area { margin-bottom: 15px; }
-        h2 { margin: 10px 0 5px; color: #333; }
-        .subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
-
-        /* --- خيارات نوع الكورس (Cards) --- */
-        .course-selection-label {
-            text-align: start;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #444;
-            display: block;
-        }
-
-        .course-options {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .option-card {
-            flex: 1;
-            border: 2px solid var(--card-border);
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-            background: #fff;
-        }
-
-        .option-card:hover { border-color: #b0c4de; background: #fafafa; }
-        
-        .option-card.selected {
-            border-color: var(--primary-color);
-            background-color: var(--selected-bg);
-            box-shadow: 0 0 0 1px var(--primary-color);
-        }
-
-        .option-card i.main-icon { font-size: 28px; color: #6c757d; margin-bottom: 10px; display: block; }
-        .option-card.selected i.main-icon { color: var(--primary-color); }
-        
-        .option-title { font-weight: bold; font-size: 14px; display: block; color: #333; }
-        
-        .option-check { 
-            position: absolute; top: 10px; right: 10px; 
-            color: var(--primary-color); opacity: 0; transition: 0.2s;
-        }
+        .course-options { display: flex; gap: 15px; margin-bottom: 25px; }
+        .option-card { flex: 1; border: 2px solid #e0e0e0; border-radius: 12px; padding: 15px; cursor: pointer; position: relative; }
+        .option-card.selected { border-color: var(--primary-color); background-color: #e7f1ff; }
+        .option-check { position: absolute; top: 10px; right: 10px; color: var(--primary-color); opacity: 0; }
         .option-card.selected .option-check { opacity: 1; }
-        html[dir="ltr"] .option-check { right: auto; left: 10px; }
+        .option-card i.main-icon { font-size: 28px; margin-bottom: 10px; display: block; color: #6c757d; }
+        .option-card.selected i.main-icon { color: var(--primary-color); }
 
-        /* --- الحقول (Inputs) --- */
-        .input-group {
-            position: relative;
-            margin-bottom: 1.5rem;
-            text-align: start; 
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #444;
-            font-size: 14px;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            padding-inline-end: 40px; /* مسافة للأيقونة */
-            border: 2px solid #e1e1e1;
-            border-radius: 10px;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 15px;
-            transition: 0.3s;
-            box-sizing: border-box;
-        }
-
-        .input-group input:focus { border-color: var(--primary-color); outline: none; }
+        .input-group { position: relative; margin-bottom: 1.5rem; text-align: start; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; font-size: 14px; }
+        .input-group input { width: 100%; padding: 12px 15px; border: 2px solid #e1e1e1; border-radius: 10px; font-family: 'Tajawal', sans-serif; box-sizing: border-box; }
         
-        /* أيقونات داخل الحقول */
-        .input-group i.field-icon {
-            position: absolute;
-            inset-inline-end: 15px; /* يمين أو يسار حسب اللغة */
-            top: 42px;
-            color: #bbb;
-        }
+        .btn-submit { width: 100%; padding: 14px; background: var(--primary-color); color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        .btn-submit:hover { background: #0b5ed7; }
 
-        /* --- زر الحماية 2FA --- */
-        .security-toggle {
-            background: #f8f9fa;
-            padding: 10px 15px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            border: 1px solid #eee;
-        }
-        
-        /* تصميم زر السويتش */
-        .switch { position: relative; display: inline-block; width: 46px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc; transition: .4s; border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute; content: "";
-            height: 18px; width: 18px;
-            left: 3px; bottom: 3px;
-            background-color: white; transition: .4s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: var(--primary-color); }
-        input:checked + .slider:before { transform: translateX(22px); }
-
-        /* --- زر الإرسال --- */
-        .btn-submit {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 4px 6px rgba(13, 110, 253, 0.2);
-        }
-        .btn-submit:hover { background: #0b5ed7; box-shadow: 0 6px 12px rgba(13, 110, 253, 0.3); }
-
-        /* --- شريط الدفع --- */
-        .payment-methods {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        .payment-title { font-size: 13px; color: #777; margin-bottom: 12px; }
-        .payment-icons { 
-            display: flex; justify-content: center; gap: 15px; 
-            align-items: center; font-size: 26px; color: #555; 
-        }
-
-        /* رسائل الخطأ والتلميحات */
-        .hint { font-size: 11px; color: #888; margin-top: 5px; text-align: start; }
-        .validation-msg { font-size: 12px; color: #dc3545; display: none; text-align: start; margin-top: 5px; font-weight: bold; }
-
+        /* شاشة الانتظار (مخفية) */
+        #pendingScreen { display: none; text-align: center; }
+        .pending-icon { font-size: 60px; color: #ffc107; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="lang-switch" onclick="toggleLanguage()">
-        <i class="fas fa-globe"></i>
-        <span id="langLabel">English</span>
-    </div>
-
-    <div class="container">
-        
-        <div class="logo-area">
-            <i class="fas fa-graduation-cap fa-3x" style="color: var(--primary-color);"></i>
-        </div>
-        <h2 id="pageTitle">أنشئ حسابك الجديد</h2>
-        <p class="subtitle" id="pageSubtitle">سجل الآن وابدأ تعلم اللغة التركية</p>
+    <div class="container" id="mainContainer">
+        <div class="logo-area"><i class="fas fa-graduation-cap fa-3x" style="color: var(--primary-color);"></i></div>
+        <h2 id="pageTitle">طلب التحاق جديد</h2>
+        <p style="color:#666; font-size:14px; margin-bottom:30px;">املأ البيانات وسيتم تفعيل حسابك بعد المراجعة</p>
         
         <form id="regForm" onsubmit="handleRegistration(event)">
             
-            <label class="course-selection-label" id="lblCourseType">اختر نوع الدروس:</label>
+            <label style="display:block; text-align:start; margin-bottom:10px; font-weight:bold;">اختر نوع الدروس:</label>
             <div class="course-options">
                 <div class="option-card selected" onclick="selectOption(this, 'group')">
                     <i class="fas fa-check-circle option-check"></i>
                     <i class="fas fa-users main-icon"></i>
-                    <span class="option-title" id="txtGroup">دروس جماعية</span>
+                    <span>دروس جماعية</span>
                 </div>
                 <div class="option-card" onclick="selectOption(this, 'private')">
                     <i class="fas fa-check-circle option-check"></i>
                     <i class="fas fa-user-tie main-icon"></i>
-                    <span class="option-title" id="txtPrivate">دروس خصوصية</span>
+                    <span>دروس خصوصية</span>
                 </div>
             </div>
             <input type="hidden" id="selectedCourse" value="group">
 
             <div class="input-group">
-                <label id="lblIdentity">البريد الإلكتروني أو رقم الجوال</label>
-                <input type="text" id="identity" placeholder="email@example.com" required>
-                <i class="fas fa-id-card field-icon"></i>
-                <div id="identityMsg" class="validation-msg"></div>
-                <p class="hint" id="hintIdentity">ندعم الأرقام السعودية (05) والتركية (05)</p>
+                <label>البريد الإلكتروني أو رقم الجوال</label>
+                <input type="text" id="identity" required>
             </div>
 
             <div class="input-group">
-                <label id="lblPassword">كلمة المرور</label>
-                <input type="password" id="password" placeholder="******" required>
-                <i class="fas fa-lock field-icon"></i>
-                <div id="passMsg" class="validation-msg"></div>
-                <p class="hint" id="hintPassword">أحرف إنجليزية، أرقام، ورموز ($, #, &)</p>
+                <label>كلمة المرور المقترحة</label>
+                <input type="password" id="password" required>
             </div>
 
-            <div class="security-toggle">
-                <span style="font-size: 13px; font-weight: 600; color: #555; display:flex; align-items:center;">
-                    <i class="fas fa-shield-alt" style="color: green; margin-inline-end: 8px;"></i>
-                    <span id="lbl2FA">تفعيل التحقق الثنائي (2FA)</span>
-                </span>
-                <label class="switch">
-                    <input type="checkbox" id="twoFactor">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <button type="submit" class="btn-submit" id="btnSubmit">متابعة للدفع الآمن</button>
-
-            <div class="payment-methods">
-                <p class="payment-title" id="txtPayment">جميع خيارات الدفع متاحة وآمنة</p>
-                <div class="payment-icons">
-                    <i class="fas fa-credit-card" style="color:#005c97;" title="Mada"></i>
-                    <i class="fab fa-cc-visa" style="color:#1A1F71;"></i>
-                    <i class="fab fa-cc-mastercard" style="color:#EB001B;"></i>
-                    <i class="fab fa-apple-pay" style="color:#000;"></i>
-                </div>
+            <button type="submit" class="btn-submit">إرسال طلب الانضمام</button>
+            
+            <div style="margin-top:20px; font-size:12px; color:#777;">
+                <i class="fas fa-lock"></i> جميع البيانات مشفرة وآمنة
             </div>
         </form>
     </div>
 
+    <div class="container" id="pendingScreen">
+        <i class="fas fa-clock pending-icon"></i>
+        <h2>تم استلام طلبك بنجاح!</h2>
+        <p style="color:#555; line-height:1.6;">
+            حسابك الآن <strong>قيد المراجعة</strong>.
+            <br>الرجاء التواصل مع الإدارة لتفعيل الاشتراك والحصول على رابط الدخول.
+        </p>
+        <button onclick="contactAdmin()" class="btn-submit" style="background:#25D366; margin-top:20px;">
+            <i class="fab fa-whatsapp"></i> تفعيل الحساب عبر واتساب
+        </button>
+    </div>
+
 <script>
-    // --- قاموس الترجمة (عربي / إنجليزي) ---
-    const translations = {
-        ar: {
-            langBtn: "English",
-            title: "أنشئ حسابك الجديد",
-            subtitle: "سجل الآن وابدأ تعلم اللغة التركية",
-            lblCourseType: "اختر نوع الدروس:",
-            txtGroup: "دروس جماعية",
-            txtPrivate: "دروس خصوصية",
-            lblIdentity: "البريد الإلكتروني أو رقم الجوال",
-            phIdentity: "email@example.com أو 05xxxxxxxx",
-            hintIdentity: "ندعم الأرقام السعودية (05) والتركية (05)",
-            lblPassword: "كلمة المرور",
-            phPassword: "أدخل كلمة المرور",
-            hintPassword: "مسموح: أحرف إنجليزية، أرقام، ورموز ($, #, &)",
-            lbl2FA: "تفعيل التحقق الثنائي (2FA)",
-            btnSubmit: "متابعة للدفع الآمن",
-            txtPayment: "جميع خيارات الدفع متاحة وآمنة",
-            msgError: "⚠️ خطأ: يرجى إدخال إيميل صحيح أو رقم جوال سعودي/تركي صحيح.",
-            msgPassError: "⚠️ خطأ: كلمة المرور يجب أن تكون بالإنجليزية وتحتوي رموزاً مسموحة فقط.",
-            alertSuccess: "✅ تم استلام الطلب بنجاح!\n",
-            txtSelected: "الخيار: ",
-            typeEmail: "بريد إلكتروني",
-            typeSaudi: "جوال سعودي",
-            typeTurkish: "جوال تركي"
-        },
-        en: {
-            langBtn: "العربية",
-            title: "Create New Account",
-            subtitle: "Register now to learn Turkish",
-            lblCourseType: "Select Lesson Type:",
-            txtGroup: "Group Lessons",
-            txtPrivate: "Private Lessons",
-            lblIdentity: "Email or Phone Number",
-            phIdentity: "email@example.com or 05xxxxxxxx",
-            hintIdentity: "Supports Saudi (05) and Turkish (05) numbers",
-            lblPassword: "Password",
-            phPassword: "Enter password",
-            hintPassword: "Allowed: English letters, numbers, symbols ($, #, &)",
-            lbl2FA: "Enable Two-Factor Auth (2FA)",
-            btnSubmit: "Proceed to Secure Payment",
-            txtPayment: "All payment methods are accepted & secure",
-            msgError: "⚠️ Error: Please enter a valid Email or Saudi/Turkish phone number.",
-            msgPassError: "⚠️ Error: Password must use English letters & allowed symbols only.",
-            alertSuccess: "✅ Request Received Successfully!\n",
-            txtSelected: "Plan: ",
-            typeEmail: "Email Address",
-            typeSaudi: "Saudi Mobile",
-            typeTurkish: "Turkish Mobile"
-        }
-    };
+    // هام: ضع رقمك هنا بدلاً من الاصفار (مثال: 966501234567)
+    const ADMIN_WHATSAPP = "966500000000"; 
 
-    let currentLang = 'ar'; // اللغة الافتراضية
-
-    // --- دالة تبديل اللغة ---
-    function toggleLanguage() {
-        currentLang = currentLang === 'ar' ? 'en' : 'ar';
-        const t = translations[currentLang];
-        
-        // تغيير اتجاه الصفحة
-        document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
-        document.documentElement.setAttribute('lang', currentLang);
-
-        // تحديث جميع النصوص في الصفحة
-        document.getElementById('langLabel').innerText = t.langBtn;
-        document.getElementById('pageTitle').innerText = t.title;
-        document.getElementById('pageSubtitle').innerText = t.subtitle;
-        document.getElementById('lblCourseType').innerText = t.lblCourseType;
-        document.getElementById('txtGroup').innerText = t.txtGroup;
-        document.getElementById('txtPrivate').innerText = t.txtPrivate;
-        document.getElementById('lblIdentity').innerText = t.lblIdentity;
-        document.getElementById('identity').placeholder = t.phIdentity;
-        document.getElementById('hintIdentity').innerText = t.hintIdentity;
-        document.getElementById('lblPassword').innerText = t.lblPassword;
-        document.getElementById('password').placeholder = t.phPassword;
-        document.getElementById('hintPassword').innerText = t.hintPassword;
-        document.getElementById('lbl2FA').innerText = t.lbl2FA;
-        document.getElementById('btnSubmit').innerText = t.btnSubmit;
-        document.getElementById('txtPayment').innerText = t.txtPayment;
-        
-        // مسح رسائل الخطأ عند تغيير اللغة
-        document.getElementById('identityMsg').style.display = 'none';
-        document.getElementById('passMsg').style.display = 'none';
+    function selectOption(el, val) {
+        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('selectedCourse').value = val;
     }
 
-    // --- دالة اختيار نوع الكورس (تغيير الستايل) ---
-    function selectOption(element, value) {
-        // إزالة التحديد من الكل
-        document.querySelectorAll('.option-card').forEach(el => el.classList.remove('selected'));
-        // تحديد العنصر المختار
-        element.classList.add('selected');
-        // تحديث القيمة المخفية
-        document.getElementById('selectedCourse').value = value;
-    }
-
-    // --- دالة التحقق والمعالجة عند الضغط على زر الدفع ---
     function handleRegistration(e) {
         e.preventDefault();
-        const t = translations[currentLang];
-
+        
+        // جلب البيانات
         const identity = document.getElementById('identity').value;
-        const password = document.getElementById('password').value;
-        const courseType = document.getElementById('selectedCourse').value;
-        const is2FA = document.getElementById('twoFactor').checked;
+        const course = document.getElementById('selectedCourse').value === 'group' ? 'دروس جماعية' : 'دروس خصوصية';
+
+        // 1. إخفاء نموذج التسجيل
+        document.getElementById('mainContainer').style.display = 'none';
         
-        const identityMsg = document.getElementById('identityMsg');
-        const passMsg = document.getElementById('passMsg');
+        // 2. إظهار شاشة الانتظار
+        document.getElementById('pendingScreen').style.display = 'block';
 
-        // تنظيف الرسائل السابقة
-        identityMsg.style.display = 'none';
-        passMsg.style.display = 'none';
+        // 3. تجهيز رسالة واتساب
+        const msg = `مرحباً، لقد قمت بتقديم طلب اشتراك جديد:
+        \n📌 النوع: ${course}
+        \n👤 المعرف: ${identity}
+        \nالرجاء تفعيل حسابي وتزويدي برابط الدخول.`;
 
-        // 1. التحقق من الهوية (Regex)
-        let type = 'unknown';
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        // جوال سعودي: يبدأ بـ 05 أو 5، يليه 8 أرقام (المجموع 10 أو 9 بدون الصفر)
-        const saudiRegex = /^(05|5)(5|0|3|6|4|9|1|8|7)([0-9]{7})$/;
-        // جوال تركي: يبدأ بـ 05، يليه 9 أرقام (المجموع 11 رقم)
-        const turkishRegex = /^(05)([0-9]{9})$/;
-
-        if (emailRegex.test(identity)) type = t.typeEmail;
-        else if (saudiRegex.test(identity)) type = t.typeSaudi;
-        else if (turkishRegex.test(identity)) type = t.typeTurkish;
-        else {
-            identityMsg.style.display = 'block';
-            identityMsg.innerText = t.msgError;
-            return;
-        }
-
-        // 2. التحقق من الباسورد (إنجليزي ورموز فقط)
-        // يسمح بـ: حروف إنجليزية (صغيرة وكبيرة)، أرقام، والرموز $ # & @ ! % ^ *
-        const passwordRegex = /^[A-Za-z0-9$#&@!%^*]+$/;
-        if (!passwordRegex.test(password)) {
-             passMsg.style.display = 'block';
-             passMsg.innerText = t.msgPassError;
-             return;
-        }
-
-        // 3. النجاح (محاكاة)
-        let courseName = courseType === 'group' ? t.txtGroup : t.txtPrivate;
-        let alertMsg = `${t.alertSuccess}`;
-        alertMsg += `📌 ${t.txtSelected} ${courseName}\n`;
-        alertMsg += `👤 ID: ${identity} (${type})\n`;
-        alertMsg += is2FA ? `🛡️ 2FA: ON` : `🛡️ 2FA: OFF`;
-        
-        alert(alertMsg);
-        
-        // هنا الكود لتوجيه المستخدم لصفحة الدفع
-window.location.href = "home.html";
+        // فتح واتساب
+        const waLink = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(msg)}`;
+        window.open(waLink, '_blank');
+    }
+    
+    function contactAdmin() {
+        const msg = "مرحباً، هل تم تفعيل حسابي؟";
+        window.open(`https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 </script>
-
 </body>
-
 </html>
